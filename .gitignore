@@ -2,3 +2,5 @@
 /frontend/.next/
 /frontend/out/
 .env
+.DS_Store
+
