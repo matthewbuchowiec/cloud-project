@@ -1,4 +1,4 @@
-# cloud-project
+# Project for CS 4287: Cloud Computing
 
 ## Description
 
@@ -6,7 +6,7 @@ A news aggregation web app that fetches every 24 hours with keyword trending ana
 
 ## Starting up the application
 
-- Backend:
+Backend:
 
 1. Go to the backend folder: `cd backend`
 2. Install the dependencies: `python3 -m venv venv` `source venv/bin/activate`
