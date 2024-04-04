@@ -1,14 +1,18 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
+from fastapi import FastAPI
+import boto3
+from botocore.exceptions import NoCredentialsError
 
 class Data(BaseModel):
     key: str
     value: str
 
-
 app = FastAPI()
 
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+
+table = dynamodb.Table('news_table')
 
 @app.get("/")
 def default():
@@ -38,3 +42,22 @@ async def get_news():
         aggregated news data and insights from batch processing
     """
     return {"message": "Not Implemented!"}
+
+
+@app.get("/items/{id}")
+async def read_item(id: int):
+    """
+    Get an item by id
+    """
+    try:
+        response = table.get_item(
+            Key={
+                'id': id 
+            }
+        )
+        item = response.get('Item', {})
+        if item:
+            return {"item": item}
+        return {"message": "Item not found"}
+    except NoCredentialsError:
+        return {"message": "Credentials not found. Make sure you have configured AWS credentials."}
