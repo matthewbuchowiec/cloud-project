@@ -10,9 +10,9 @@ class Data(BaseModel):
 
 app = FastAPI()
 
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-2')
 
-table = dynamodb.Table('news_table')
+table = dynamodb.Table('news_table_us-east-2')
 
 @app.get("/")
 def default():
