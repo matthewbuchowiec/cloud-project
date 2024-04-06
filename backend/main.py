@@ -1,18 +1,23 @@
+import boto3.dynamodb
+import boto3.dynamodb.conditions
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi import FastAPI
 import boto3
 from botocore.exceptions import NoCredentialsError
+from datetime import datetime
+from boto3.dynamodb.conditions import Key, Attr
+
 
 class Data(BaseModel):
     key: str
     value: str
 
+
 app = FastAPI()
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-2')
 
-table = dynamodb.Table('news_table_us-east-2')
 
 @app.get("/")
 def default():
@@ -35,13 +40,24 @@ async def load_test():
 @app.get("/news/")
 async def get_news():
     """
-    Batch processes news from the past 24 hours from dynamodb, and gets aggregated news
-    data and insights
+    Get aggregated news data for the current day by category from dynamodb, and send it to the frontend
 
     Returns:
-        aggregated news data and insights from batch processing
+        aggregated news data by category
     """
-    return {"message": "Not Implemented!"}
+
+    table = dynamodb.Table('news_table_us-east-2')
+
+    try:
+        response = table.query(
+            IndexName="date_created-index",
+            KeyConditionExpression=Key('date_created').eq(
+                datetime.today().strftime('%Y-%m-%d'))
+        )
+
+        return response["Items"]
+    except NoCredentialsError:
+        return {"message": "Credentials not found. Make sure you have configured AWS credentials."}
 
 
 @app.get("/items/{id}")
@@ -52,7 +68,7 @@ async def read_item(id: int):
     try:
         response = table.get_item(
             Key={
-                'id': id 
+                'id': id
             }
         )
         item = response.get('Item', {})
