@@ -1,13 +1,7 @@
-import boto3.dynamodb
-import boto3.dynamodb.conditions
 from fastapi import FastAPI
 from pydantic import BaseModel
-from fastapi import FastAPI
-import boto3
-from botocore.exceptions import NoCredentialsError
-from datetime import datetime
-from boto3.dynamodb.conditions import Key, Attr
-
+import keywords
+import database
 
 class Data(BaseModel):
     key: str
@@ -15,9 +9,6 @@ class Data(BaseModel):
 
 
 app = FastAPI()
-
-dynamodb = boto3.resource('dynamodb', region_name='us-east-2')
-
 
 @app.get("/")
 def default():
@@ -45,35 +36,13 @@ async def get_news():
     Returns:
         aggregated news data by category
     """
+    return database.get_news_by_date()
 
-    table = dynamodb.Table('news_table_us-east-2')
-
-    try:
-        response = table.query(
-            IndexName="date_created-index",
-            KeyConditionExpression=Key('date_created').eq(
-                datetime.today().strftime('%Y-%m-%d'))
-        )
-
-        return response["Items"]
-    except NoCredentialsError:
-        return {"message": "Credentials not found. Make sure you have configured AWS credentials."}
-
-
-@app.get("/items/{id}")
-async def read_item(id: int):
+@app.get("/keywords/")
+async def get_keywords_analysis():
     """
-    Get an item by id
+    Get the keyword analysis
     """
-    try:
-        response = table.get_item(
-            Key={
-                'id': id
-            }
-        )
-        item = response.get('Item', {})
-        if item:
-            return {"item": item}
-        return {"message": "Item not found"}
-    except NoCredentialsError:
-        return {"message": "Credentials not found. Make sure you have configured AWS credentials."}
+    articles = database.get_all_news()
+    analysis =  keywords.get_analysis(articles)
+    return analysis 
