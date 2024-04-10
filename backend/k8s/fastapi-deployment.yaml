@@ -9,6 +9,8 @@ spec:
       app: fastapi-app
   template:
     metadata:
+      annotations:
+        iam.amazonaws.com/role: "arn:aws:iam::740705561466:role/EC2_admin"  
       labels:
         app: fastapi-app
     spec:
