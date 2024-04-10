@@ -3,5 +3,5 @@
 cd ../
 
 docker build -t fastapi-news .
-docker tag fastapi-app dushims/fastapi-news
+docker tag fastapi-news dushims/fastapi-news
 docker push dushims/fastapi-news
