@@ -1,4 +1,4 @@
-# script to build and push the fastapi-app docker image to docker hub
+# script to build and push the fastapi-news docker image to docker hub
 
 cd ../
 
