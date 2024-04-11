@@ -14,7 +14,8 @@ const News = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          process.env.NEXT_PUBLIC_SERVER_URL + "news/"
+          // process.env.NEXT_PUBLIC_SERVER_URL + "news/"
+          "http://52.12.86.8:30001/"
         );
         const data = await response.json();
         const allArticles = data.flatMap((category) => category.articles);
