@@ -2,7 +2,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import News from "./components/News";
+import Content from "./components/Content";
 import { Suspense } from "react";
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
       </Suspense>
       <div className={styles.container}>
         <Suspense>
-          <News />
+          <Content />
         </Suspense>
       </div>
       <Footer />
