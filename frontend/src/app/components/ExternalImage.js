@@ -6,8 +6,10 @@ const ExternalImage = ({ src, alt }) => {
       src={src}
       alt={alt}
       unoptimized={true}
-      layout="fill"
-      objectFit="cover"
+      // layout="fill"
+      // objectFit="cover"
+      width={600}
+      height={400}
     />
   );
 };

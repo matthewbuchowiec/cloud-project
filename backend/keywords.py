@@ -8,9 +8,10 @@ nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
 additional_filters = {'not_available', 'com', 'chars', 'www', 'http', 'bbc', 
-                      'forbes','one','two','three','first','last','new','news','fox',
-                      'next','year','today','health','sports','business',
-                      'athletic'}
+                      'forbes','washington_post','one','two','three','first','last','new',
+                      'news','fox','next','year','today','health','sports','business',
+                      'entertainment','athletic','verge','washington_post','york_post',
+                      'monday','tuesday','wednesday','thursday','friday','saturday','sunday'}
 
 # Preprocess the item data to get titles and contents
 def get_texts(data):
@@ -29,7 +30,7 @@ def preprocess_and_detect_phrases(texts):
               and word not in additional_filters] for text in texts]
     
     # Phrase detection
-    phrases = Phrases(texts, min_count=5, threshold=10)
+    phrases = Phrases(texts, min_count=10, threshold=15)
     phraser = Phraser(phrases)
     phrased_texts = [' '.join(phraser[text]) for text in texts]
     
@@ -37,7 +38,7 @@ def preprocess_and_detect_phrases(texts):
 
 # TF-IDF Vectorization and Analysis
 def analyze_texts(phrased_texts, top_n=20):
-    vectorizer = TfidfVectorizer(max_features=1000, ngram_range=(1, 3), min_df=3, max_df=0.5)
+    vectorizer = TfidfVectorizer(max_features=1000, ngram_range=(1, 3), min_df=5, max_df=0.4)
     tfidf_matrix = vectorizer.fit_transform(phrased_texts)
     feature_names = np.array(vectorizer.get_feature_names_out())
 
@@ -50,11 +51,11 @@ def analyze_texts(phrased_texts, top_n=20):
 
     # Extract top n features and their scores
     top_features = [(feature, score) for feature, score in zip(sorted_features, sorted_scores)][:top_n]
-    formatted_list = [{"text": text, "value": value} for text, value in top_features]
+    formatted_list = [{"value": text, "count": value} for text, value in top_features]
     return formatted_list
 
 # Driver function
-def get_analysis(data, top_n=20):
+def get_analysis(data, top_n=30):
     texts = get_texts(data)
     phrased_texts = preprocess_and_detect_phrases(texts)
     return analyze_texts(phrased_texts, top_n=top_n)

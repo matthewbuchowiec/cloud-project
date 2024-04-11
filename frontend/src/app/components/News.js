@@ -3,19 +3,15 @@ import React, { useState, useEffect } from "react";
 import ExternalImage from "./ExternalImage";
 import styles from "../styles/News.module.css";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
-const News = () => {
+const News = ({ category }) => {
   const [articles, setArticles] = useState([]);
-  const searchParams = useSearchParams();
-  const category = searchParams.get("category") || "topHeadlines";
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          // process.env.NEXT_PUBLIC_SERVER_URL + "news/"
-          "http://52.12.86.8:30001/news/"
+          process.env.NEXT_PUBLIC_SERVER_URL + "/news/"
+          // "http://52.12.86.8:30001/news/"
         );
         const data = await response.json();
         const allArticles = data.flatMap((category) => category.articles);

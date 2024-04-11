@@ -1,0 +1,10 @@
+.conatainer {
+  display: grid;
+  place-items: center;
+}
+.span {
+  color: rgba(46, 46, 46, 0.743);
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 2rem;
+}
