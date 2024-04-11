@@ -1,14 +1,19 @@
-from collections import defaultdict
 import re
 import nltk
-nltk.download('stopwords')
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from gensim.models.phrases import Phrases, Phraser
+import numpy as np
+nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
-additional_filters = {'not_available', 'com', 'chars', 'www', 'http'}
-number_words = set(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "zero", "first", "second"])
 
-# Preprocess the item data to get titles
-def get_titles(data):
+additional_filters = {'not_available', 'com', 'chars', 'www', 'http', 'bbc', 
+                      'forbes','one','two','three','first','last','new','news','fox',
+                      'next','year','today','health','sports','business',
+                      'athletic'}
+
+# Preprocess the item data to get titles and contents
+def get_texts(data):
     texts = []
     for category in data: 
         titles = [article['title'] for article in category]
@@ -16,36 +21,40 @@ def get_titles(data):
         texts.extend(titles + contents)
     return texts
 
-# Map Function
-def map_function(text): 
-    words = re.findall(r'\w+', text.lower())
-    filtered_words = [word for word in words if word not in stop_words and not re.match(r'^\d+$', word) and word not in additional_filters and word not in number_words and not word.isdigit()]
-    return [(word, 1) for word in filtered_words]
-
-# Shuffle and Sort
-def shuffle_and_sort(mapped_values):
-    grouped_values = defaultdict(list)
-    for pair in mapped_values:
-        grouped_values[pair[0]].append(pair[1])
-    return grouped_values
-
-# Reduce Function - Implementing a Frequency Threshold
-def reduce_function(grouped_values, min_frequency=5):
-    reduced_values = {}
-    for word, counts in grouped_values.items():
-        total_counts = sum(counts)
-        if total_counts >= min_frequency:
-            reduced_values[word] = total_counts
-    return reduced_values
-
-# Driver function (Minor modifications)
-def get_analysis(data, n=1, min_frequency=5):
-    texts = get_titles(data)
-    mapped_values = []
-    for text in texts:
-        mapped_values.extend(map_function(text))
+# Preprocessing and phrase detection
+def preprocess_and_detect_phrases(texts):
+    # Basic preprocessing
+    texts = [[word for word in re.findall(r'\w+', text.lower()) 
+              if word not in stop_words and not word.isdigit() 
+              and word not in additional_filters] for text in texts]
     
-    grouped_values = shuffle_and_sort(mapped_values)
-    reduced_values = reduce_function(grouped_values, min_frequency=min_frequency)
+    # Phrase detection
+    phrases = Phrases(texts, min_count=5, threshold=10)
+    phraser = Phraser(phrases)
+    phrased_texts = [' '.join(phraser[text]) for text in texts]
     
-    return sorted(reduced_values.items(), key=lambda x: x[1], reverse=True)
+    return phrased_texts
+
+# TF-IDF Vectorization and Analysis
+def analyze_texts(phrased_texts, top_n=20):
+    vectorizer = TfidfVectorizer(max_features=1000, ngram_range=(1, 3), min_df=3, max_df=0.5)
+    tfidf_matrix = vectorizer.fit_transform(phrased_texts)
+    feature_names = np.array(vectorizer.get_feature_names_out())
+
+    # Calculate average TF-IDF score for each term across all documents
+    average_tfidf_scores = np.mean(tfidf_matrix.toarray(), axis=0)
+
+    sorted_indices = np.argsort(average_tfidf_scores)[::-1]
+    sorted_features = feature_names[sorted_indices]
+    sorted_scores = average_tfidf_scores[sorted_indices]
+
+    # Extract top n features and their scores
+    top_features = [(feature, score) for feature, score in zip(sorted_features, sorted_scores)][:top_n]
+    formatted_list = [{"text": text, "value": value} for text, value in top_features]
+    return formatted_list
+
+# Driver function
+def get_analysis(data, top_n=20):
+    texts = get_texts(data)
+    phrased_texts = preprocess_and_detect_phrases(texts)
+    return analyze_texts(phrased_texts, top_n=top_n)
