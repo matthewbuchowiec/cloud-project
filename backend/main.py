@@ -46,12 +46,12 @@ def fetch_and_cache_data():
     analysis = keywords.get_analysis(articles)
     cache["keywords_analysis"] = analysis
 
-@app.on_event("startup")
-async def start_scheduler():
-    # Schedule the `fetch_and_cache_data` to run every day at 7:00 AM
-    scheduler.add_job(fetch_and_cache_data, trigger=CronTrigger(hour=7, minute=0))
-    scheduler.start()
-    fetch_and_cache_data()
+# @app.on_event("startup")
+# async def start_scheduler():
+#     # Schedule the `fetch_and_cache_data` to run every day at 7:00 AM
+#     scheduler.add_job(fetch_and_cache_data, trigger=CronTrigger(hour=7, minute=0))
+#     scheduler.start()
+#     fetch_and_cache_data()
 
 @app.get("/keywords/")
 async def get_keywords_analysis():

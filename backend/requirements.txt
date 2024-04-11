@@ -3,3 +3,7 @@ uvicorn[standard]
 boto3
 awscli
 apscheduler
+nltk
+scikit-learn
+gensim
+scipy==1.10.1
