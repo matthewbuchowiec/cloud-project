@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import ExternalImage from "./ExternalImage";
 import styles from "../styles/News.module.css";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -51,12 +51,7 @@ const News = () => {
           <div key={index} className={styles.card}>
             {article.urlToImage && (
               <div className={styles.cardImage}>
-                <Image
-                  src={article.urlToImage}
-                  alt={article.title}
-                  layout="fill"
-                  objectFit="cover"
-                />
+                <ExternalImage src={article.urlToImage} alt={article.title} />
               </div>
             )}
             <Link href={article.url} target="_blank" rel="noopener noreferrer">
