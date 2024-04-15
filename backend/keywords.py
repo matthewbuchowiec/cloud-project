@@ -8,10 +8,11 @@ nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
 additional_filters = {'not_available', 'com', 'chars', 'www', 'http', 'bbc', 
-                      'forbes','washington_post','one','two','three','first','last','new',
+                      'forbes','washington_post', 'bloomberg','one','two','three','first','last','new',
                       'news','fox','next','year','today','health','sports','business',
                       'entertainment','athletic','verge','washington_post','york_post',
-                      'monday','tuesday','wednesday','thursday','friday','saturday','sunday'}
+                      'monday','tuesday','wednesday','thursday','friday','saturday','sunday',
+                      'could','says','like','wwe'}
 
 # Preprocess the item data to get titles and contents
 def get_texts(data):
@@ -37,7 +38,7 @@ def preprocess_and_detect_phrases(texts):
     return phrased_texts
 
 # TF-IDF Vectorization and Analysis
-def analyze_texts(phrased_texts, top_n=20):
+def analyze_texts(phrased_texts, top_n):
     vectorizer = TfidfVectorizer(max_features=1000, ngram_range=(1, 3), min_df=5, max_df=0.4)
     tfidf_matrix = vectorizer.fit_transform(phrased_texts)
     feature_names = np.array(vectorizer.get_feature_names_out())
@@ -55,7 +56,7 @@ def analyze_texts(phrased_texts, top_n=20):
     return formatted_list
 
 # Driver function
-def get_analysis(data, top_n=30):
+def get_analysis(data, top_n=40):
     texts = get_texts(data)
     phrased_texts = preprocess_and_detect_phrases(texts)
     return analyze_texts(phrased_texts, top_n=top_n)

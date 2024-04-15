@@ -8,7 +8,18 @@ const Content = () => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
 
-  return <>{category ? <News category={category} /> : <Keywords />}</>;
+  return (
+    <>
+      {category ? (
+        <>
+          <Keywords category={category} />
+          <News category={category} />
+        </>
+      ) : (
+        <Keywords category={"total"} />
+      )}
+    </>
+  );
 };
 
 export default Content;

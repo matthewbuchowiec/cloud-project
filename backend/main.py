@@ -1,15 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
 import keywords
 import database
+from datetime import datetime, timedelta
 
 class Data(BaseModel):
     key: str
     value: str
-
 
 app = FastAPI()
 origins = ["*"]
@@ -21,7 +19,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-scheduler = AsyncIOScheduler()
 cache = {} 
 
 @app.get("/")
@@ -51,23 +48,36 @@ async def get_news():
     """
     return database.get_news_by_date()
 
-def fetch_and_cache_data():
-    articles = database.get_all_news()
+@app.get("/news/count/{category}/")
+async def get_news():
+    """
+    Get the count of news sources for the current day by category from dynamodb, and send it to the frontend
+
+    Returns:
+        aggregated news data by category
+    """
+    return database.get_news_by_date()
+
+def fetch_and_cache_data(category):
+    """
+    get keyword analysis based on cache
+    """
+    if category == "total":
+        articles = database.get_all_news()
+    else: 
+        articles = database.get_news_by_category(category)
     analysis = keywords.get_analysis(articles)
-    cache["keywords_analysis"] = analysis
+    cache[category] = {
+        "data": analysis,
+        "timestamp": datetime.now()
+    }
 
-# @app.on_event("startup")
-# async def start_scheduler():
-#     # Schedule the `fetch_and_cache_data` to run every day at 7:00 AM
-#     scheduler.add_job(fetch_and_cache_data, trigger=CronTrigger(hour=7, minute=0))
-#     scheduler.start()
-#     fetch_and_cache_data()
-
-@app.get("/keywords/")
-async def get_keywords_analysis():
+@app.get("/keywords/{category}/")
+async def get_keywords_analysis(category="total"):
     """
     Get the keyword analysis
     """
-    if "keywords_analysis" not in cache:
-        fetch_and_cache_data()
-    return cache["keywords_analysis"]
+    # update or invalidate cache
+    if category not in cache or (datetime.now() - cache[category]["timestamp"]) > timedelta(hours=24):
+        fetch_and_cache_data(category)
+    return cache[category]['data']
