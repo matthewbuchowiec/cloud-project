@@ -19,14 +19,13 @@ const Keywords = ({ category }) => {
       }
     };
     fetchData();
-    setDisplayCategory(category);
+    setDisplayCategory(category === "topHeadlines" ? "trending" : category);
   }, [category]);
 
   return (
     <div className={styles.conatainer}>
       <span className={styles.span}>
-        Today's keywords for{" "}
-        {displayCategory === "topHeadlines" ? "trending" : displayCategory}:
+        Today's keywords for {displayCategory}
       </span>
       <TagCloud minSize={20} maxSize={40} tags={data} />
     </div>
