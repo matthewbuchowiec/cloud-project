@@ -75,7 +75,7 @@ async def get_source_counts(category):
     Returns:
         aggregated news data by category
     """
-    if category not in cache or (datetime.now() - cache[category]["timestamp"]) > timedelta(hours=24):
+    if category not in cache['news'] or (datetime.now() - cache['news'][category]["timestamp"]) > timedelta(hours=24):
         fetch_and_cache_news(category)
     data = cache['news'][category]['data']
     counts = {}
