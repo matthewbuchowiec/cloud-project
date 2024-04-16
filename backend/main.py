@@ -52,19 +52,6 @@ async def get_news():
     """
     return database.get_news_by_date()
 
-def fetch_and_cache_news(category):
-    """
-    get keyword analysis based on cache
-    """
-    articles =[]
-    if category == "total":
-        articles = database.get_all_news()
-    else: 
-        articles = database.get_news_by_category(category)
-    cache['news'][category] = {
-        "data": articles,
-        "timestamp": datetime.now()
-    }
 
 def fetch_and_cache_news(category):
     """
@@ -79,12 +66,12 @@ def fetch_and_cache_news(category):
         "data": articles,
         "timestamp": datetime.now()
     }
+
 
 @app.get("/source/count/{category}/")
 async def get_source_counts(category):
     """
     Get the count of news sources for the current day by category from dynamodb, and send it to the frontend
-
     Returns:
         aggregated news data by category
     """
