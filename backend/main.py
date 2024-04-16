@@ -29,7 +29,6 @@ cache = {
 def default():
     return "Fast API News Server"
 
-
 @app.get("/test/")
 async def load_test():
     """
