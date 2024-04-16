@@ -66,6 +66,20 @@ def fetch_and_cache_news(category):
         "timestamp": datetime.now()
     }
 
+def fetch_and_cache_news(category):
+    """
+    get keyword analysis based on cache
+    """
+    articles =[]
+    if category == "total":
+        articles = database.get_all_news()
+    else: 
+        articles = database.get_news_by_category(category)
+    cache['news'][category] = {
+        "data": articles,
+        "timestamp": datetime.now()
+    }
+
 @app.get("/source/count/{category}/")
 async def get_source_counts(category):
     """
