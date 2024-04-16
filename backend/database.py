@@ -12,6 +12,12 @@ def get_all_news():
     articles = [item['articles'] for item in data]
     return articles
 
+def get_news_by_category(category):
+    response = table.scan() 
+    data = response['Items']
+    articles = [item['articles'] for item in data if item['category']==category]
+    return articles
+
 def get_news_by_date(): 
     response = table.query(
     IndexName="date_created-index",

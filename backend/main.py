@@ -1,15 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import keywords
 import database
-
+from datetime import datetime, timedelta
 
 class Data(BaseModel):
     key: str
     value: str
-
 
 app = FastAPI()
 origins = ["*"]
@@ -21,14 +19,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-scheduler = AsyncIOScheduler()
-cache = {}
 
+cache = {
+    'keywords': {},
+    'news': {}
+} 
 
 @app.get("/")
 def default():
     return "Fast API News Server"
-
 
 @app.get("/test/")
 async def load_test():
@@ -53,18 +52,60 @@ async def get_news():
     """
     return database.get_news_by_date()
 
+def fetch_and_cache_news(category):
+    """
+    get keyword analysis based on cache
+    """
+    articles =[]
+    if category == "total":
+        articles = database.get_all_news()
+    else: 
+        articles = database.get_news_by_category(category)
+    cache['news'][category] = {
+        "data": articles,
+        "timestamp": datetime.now()
+    }
 
-def fetch_and_cache_data():
-    articles = database.get_all_news()
+@app.get("/source/count/{category}/")
+async def get_source_counts(category):
+    """
+    Get the count of news sources for the current day by category from dynamodb, and send it to the frontend
+
+    Returns:
+        aggregated news data by category
+    """
+    if category not in cache or (datetime.now() - cache[category]["timestamp"]) > timedelta(hours=24):
+        fetch_and_cache_news(category)
+    data = cache['news'][category]['data']
+    counts = {}
+    for category in data: 
+        for article in category: 
+            source = article['source']
+            counts[source] = counts.get(source, 0) + 1
+    # only get counts above 5
+    filtered_counts = {key: value for key, value in counts.items() if value >= 5}
+    return filtered_counts
+
+def fetch_and_cache_keywords(category):
+    """
+    get keyword analysis based on cache
+    """
+    if category == "total":
+        articles = database.get_all_news()
+    else: 
+        articles = database.get_news_by_category(category)
     analysis = keywords.get_analysis(articles)
-    cache["keywords_analysis"] = analysis
+    cache['keywords'][category] = {
+        "data": analysis,
+        "timestamp": datetime.now()
+    }
 
-
-@app.get("/keywords/")
-async def get_keywords_analysis():
+@app.get("/keywords/{category}/")
+async def get_keywords_analysis(category="total"):
     """
     Get the keyword analysis
     """
-    if "keywords_analysis" not in cache:
-        fetch_and_cache_data()
-    return cache["keywords_analysis"]
+    # update or invalidate cache
+    if category not in cache['keywords'] or (datetime.now() - cache['keywords'][category]["timestamp"]) > timedelta(hours=24):
+        fetch_and_cache_keywords(category)
+    return cache['keywords'][category]['data']
