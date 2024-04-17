@@ -4,7 +4,7 @@ import ExternalImage from "./ExternalImage";
 import styles from "../styles/News.module.css";
 import Link from "next/link";
 
-const News = ({ category }) => {
+const News = ({ category, selectedSource, setCounts }) => {
   const [articles, setArticles] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -14,6 +14,8 @@ const News = ({ category }) => {
         );
         const data = await response.json();
         const allArticles = data.flatMap((category) => category.articles);
+
+        // Filter out articles with no url and articles that are not in the selected category
         const filteredArticles = allArticles.filter(
           (article) =>
             article.url !== "[Removed]" &&
@@ -23,6 +25,7 @@ const News = ({ category }) => {
                 ?.articles.includes(article))
         );
 
+        // Replace missing images with placeholders
         const articlesWithPlaceholders = filteredArticles.map((article) => ({
           ...article,
           urlToImage:
@@ -31,13 +34,30 @@ const News = ({ category }) => {
               : article.urlToImage,
         }));
 
+        // Count news sources
+        let counts = {};
+        articlesWithPlaceholders.forEach((article) => {
+          counts[article.source] = counts[article.source]
+            ? counts[article.source] + 1
+            : 1;
+        });
+        setCounts(counts);
+
+        // Filter articles by selected source if selected from doughnut chart
+        if (selectedSource) {
+          const filteredArticles = articlesWithPlaceholders.filter(
+            (article) => article.source === selectedSource
+          );
+          setArticles(filteredArticles);
+          return;
+        }
         setArticles(articlesWithPlaceholders);
       } catch (error) {
         console.error("Error fetching news data:", error);
       }
     };
     fetchData();
-  }, [category]);
+  }, [category, selectedSource]);
 
   return (
     <>
