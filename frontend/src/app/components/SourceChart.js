@@ -1,46 +1,48 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { Doughnut } from "react-chartjs-2";
 import "chart.js/auto";
 
-const SourceChart = ({ category }) => {
-  const [renderData, setRenderData] = useState();
+const SourceChart = forwardRef(
+  ({ category, setSelectedSource, counts }, ref) => {
+    const [renderData, setRenderData] = useState();
+    useEffect(() => {
+      const entries = Object.entries(counts);
+      entries.sort((a, b) => b[1] - a[1]);
+      const sortedEntries = entries.slice(0, 7);
+      const sortedData = Object.fromEntries(sortedEntries);
+      const data = {
+        labels: Object.keys(sortedData),
+        datasets: [
+          {
+            label: "Sources",
+            data: Object.values(sortedData),
+            borderWidth: 1,
+          },
+        ],
+      };
+      setRenderData(data);
+    }, [category, counts]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_SERVER_URL + `/source/count/${category}/`
-        );
-        const resData = await response.json();
-        const data = {
-          labels: Object.keys(resData),
-          datasets: [
-            {
-              label: "Sources",
-              data: Object.values(resData),
-              borderWidth: 1,
-            },
-          ],
-        };
-        console.log("Data:", data);
-        setRenderData(data);
-      } catch (error) {
-        console.error("Error fetching news data:", error);
+    const handleClick = (_event, elements) => {
+      if (elements.length !== 0) {
+        const elementIndex = elements[0].index;
+        const label = renderData.labels[elementIndex];
+        setSelectedSource(label);
       }
     };
-    fetchData();
-  }, [category]);
 
-  const options = {
-    maintainAspectRatio: false,
-  };
+    const options = {
+      maintainAspectRatio: false,
+      onClick: handleClick,
+    };
 
-  return (
-    <div style={{ width: "300px", height: "300px" }}>
-      {renderData && <Doughnut data={renderData} options={options} />}
-    </div>
-  );
-};
+    return (
+      <div style={{ width: "300px", height: "300px" }} ref={ref}>
+        {renderData && <Doughnut data={renderData} options={options} />}
+      </div>
+    );
+  }
+);
 
 export default SourceChart;

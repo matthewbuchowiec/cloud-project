@@ -22,7 +22,8 @@ app.add_middleware(
 
 cache = {
     'keywords': {},
-    'news': {}
+    'news': {},
+    'todayNews': {}
 } 
 
 @app.get("/")
@@ -41,6 +42,16 @@ async def load_test():
 
     return {"message": "Load Test Completed!!"}
 
+def get_today_news():
+    today = datetime.now().strftime("%Y-%m-%d")
+    cached_data = cache['todayNews'].get(today)
+
+    if cached_data:
+        return cached_data
+    else:
+        data = database.get_news_by_date()
+        cache['todayNews'][today] = data
+        return data
 
 @app.get("/news/")
 async def get_news():
@@ -50,42 +61,7 @@ async def get_news():
     Returns:
         aggregated news data by category
     """
-    return database.get_news_by_date()
-
-
-def fetch_and_cache_news(category):
-    """
-    get keyword analysis based on cache
-    """
-    articles =[]
-    if category == "total":
-        articles = database.get_all_news()
-    else: 
-        articles = database.get_news_by_category(category)
-    cache['news'][category] = {
-        "data": articles,
-        "timestamp": datetime.now()
-    }
-
-
-@app.get("/source/count/{category}/")
-async def get_source_counts(category):
-    """
-    Get the count of news sources for the current day by category from dynamodb, and send it to the frontend
-    Returns:
-        aggregated news data by category
-    """
-    if category not in cache['news'] or (datetime.now() - cache['news'][category]["timestamp"]) > timedelta(hours=24):
-        fetch_and_cache_news(category)
-    data = cache['news'][category]['data']
-    counts = {}
-    for category in data: 
-        for article in category: 
-            source = article['source']
-            counts[source] = counts.get(source, 0) + 1
-    # only get counts above 5
-    filtered_counts = {key: value for key, value in counts.items() if value >= 5}
-    return filtered_counts
+    return get_today_news()
 
 def fetch_and_cache_keywords(category):
     """
