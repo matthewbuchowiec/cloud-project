@@ -2,22 +2,34 @@
   display: grid;
   place-items: center;
   padding-bottom: 2rem;
+  border-right: 1px dashed rgba(0, 0, 0, 0.23);
 }
+
 .span {
   color: rgb(0, 0, 0);
   font-size: 1.8rem;
   font-weight: 400;
-  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  width: 100%;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.23);
 }
 
 .displayCategory {
   color: #007bff;
   font-weight: 600;
-  text-transform: capitalize;
+}
+
+.keywordSplit {
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
 .tagCloud {
   text-transform: capitalize;
+  padding-bottom: 1rem;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
@@ -26,9 +38,12 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    border: 0;
   }
   .tagCloud {
     display: flex;
     flex-wrap: wrap;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.23);
+    margin-right: 0;
   }
 }

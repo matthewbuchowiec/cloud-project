@@ -1,4 +1,5 @@
 .grid {
+  margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
@@ -55,8 +56,3 @@
   font-size: 0.8rem;
 }
 
-.split {
-  width: 100%;
-  margin-bottom: 2rem;
-  border: 1px dotted rgb(0, 0, 0);
-}

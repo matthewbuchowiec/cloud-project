@@ -61,7 +61,6 @@ const News = ({ category, selectedSource, setCounts }) => {
 
   return (
     <>
-      <hr className={styles.split}></hr>
       <div className={styles.grid}>
         {articles.map((article, index) => (
           <a

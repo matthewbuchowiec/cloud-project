@@ -129,7 +129,12 @@
     }
   
     .dateContainer {
-      align-items: center;
+      flex-direction: row;
       margin-top: 1rem;
     }
+
+    .date::after {
+      content: "\00a0";
+    }
+    
   }

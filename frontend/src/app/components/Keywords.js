@@ -31,8 +31,9 @@ const Keywords = ({ category }) => {
   return (
     <div className={styles.conatainer}>
       <span className={styles.span}>
-        Today&apos;s keywords for{' '}
-        <span className={styles.displayCategory}>{displayCategory}</span>
+        Today&apos;s{" "}
+        <span className={styles.displayCategory}>{displayCategory}</span>{" "}
+        keywords
       </span>
       <TagCloud minSize={20} maxSize={40} colorOptions={options} tags={data} className={styles.tagCloud}/>
     </div>
