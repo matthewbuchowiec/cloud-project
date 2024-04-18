@@ -32,7 +32,7 @@ const Keywords = ({ category }) => {
     <div className={`${styles.conatainer} ${data.length > 0 ? styles.fadeInUp : ''}`}>
       {data.length > 0 && (
         <span className={`${styles.span} ${data.length > 0 ? styles.fadeInUp : ''}`}>
-          Today's{" "}
+          Today&apos;s{" "}
           <span className={styles.displayCategory}>{displayCategory}</span>{" "}
           keywords
         </span>
