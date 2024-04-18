@@ -25,7 +25,7 @@ const Keywords = ({ category }) => {
   return (
     <div className={styles.conatainer}>
       <span className={styles.span}>
-        Today's keywords for {displayCategory}
+        Today&apos;s keywords for {displayCategory}
       </span>
       <TagCloud minSize={20} maxSize={40} tags={data} />
     </div>

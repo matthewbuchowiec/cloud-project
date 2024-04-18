@@ -45,4 +45,6 @@ const SourceChart = forwardRef(
   }
 );
 
+SourceChart.displayName = "SourceChart";
+
 export default SourceChart;
