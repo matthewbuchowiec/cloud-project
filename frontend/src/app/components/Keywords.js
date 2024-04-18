@@ -34,7 +34,7 @@ const Keywords = ({ category }) => {
         Today&apos;s keywords for{' '}
         <span className={styles.displayCategory}>{displayCategory}</span>
       </span>
-      <TagCloud minSize={20} maxSize={40} colorOptions={options} tags={data} />
+      <TagCloud minSize={20} maxSize={40} colorOptions={options} tags={data} className={styles.tagCloud}/>
     </div>
   );
 };

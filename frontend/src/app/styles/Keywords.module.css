@@ -18,5 +18,13 @@
 @media (max-width: 768px) {
   .conatainer {
     place-items: baseline;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .tagCloud {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
   }
 }
