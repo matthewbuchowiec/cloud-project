@@ -13,6 +13,11 @@
 .displayCategory {
   color: #007bff;
   font-weight: 600;
+  text-transform: capitalize;
+}
+
+.tagCloud {
+  text-transform: capitalize;
 }
 
 @media (max-width: 768px) {
