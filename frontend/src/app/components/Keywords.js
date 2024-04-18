@@ -6,6 +6,7 @@ import styles from "../styles/Keywords.module.css";
 const Keywords = ({ category }) => {
   const [data, setData] = useState([]);
   const [displayCategory, setDisplayCategory] = useState(category);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,19 +24,26 @@ const Keywords = ({ category }) => {
   }, [category]);
 
   const options = {
-    luminosity: 'dark',
-    hue: '#007bff',
-  }
-  
+    luminosity: "dark",
+    hue: "#007bff",
+  };
 
   return (
-    <div className={styles.conatainer}>
-      <span className={styles.span}>
-        Today&apos;s{" "}
-        <span className={styles.displayCategory}>{displayCategory}</span>{" "}
-        keywords
-      </span>
-      <TagCloud minSize={20} maxSize={40} colorOptions={options} tags={data} className={styles.tagCloud}/>
+    <div className={`${styles.conatainer} ${data.length > 0 ? styles.fadeInUp : ''}`}>
+      {data.length > 0 && (
+        <span className={`${styles.span} ${data.length > 0 ? styles.fadeInUp : ''}`}>
+          Today's{" "}
+          <span className={styles.displayCategory}>{displayCategory}</span>{" "}
+          keywords
+        </span>
+      )}
+      <TagCloud
+        minSize={20}
+        maxSize={40}
+        colorOptions={options}
+        tags={data}
+        className={`${styles.tagCloud} ${data.length > 0 ? styles.fadeInUp : ''}`}
+      />
     </div>
   );
 };

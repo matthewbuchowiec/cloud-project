@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import ExternalImage from "./ExternalImage";
 import styles from "../styles/News.module.css";
@@ -6,6 +5,7 @@ import Link from "next/link";
 
 const News = ({ category, selectedSource, setCounts }) => {
   const [articles, setArticles] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -14,17 +14,13 @@ const News = ({ category, selectedSource, setCounts }) => {
         );
         const data = await response.json();
         const allArticles = data.flatMap((category) => category.articles);
-
         // Filter out articles with no url and articles that are not in the selected category
         const filteredArticles = allArticles.filter(
           (article) =>
             article.url !== "[Removed]" &&
             (category === "topHeadlines" ||
-              data
-                .find((cat) => cat.category === category)
-                ?.articles.includes(article))
+              data.find((cat) => cat.category === category)?.articles.includes(article))
         );
-
         // Replace missing images with placeholders
         const articlesWithPlaceholders = filteredArticles.map((article) => ({
           ...article,
@@ -33,7 +29,6 @@ const News = ({ category, selectedSource, setCounts }) => {
               ? "not_available"
               : article.urlToImage,
         }));
-
         // Count news sources
         let counts = {};
         articlesWithPlaceholders.forEach((article) => {
@@ -42,7 +37,6 @@ const News = ({ category, selectedSource, setCounts }) => {
             : 1;
         });
         setCounts(counts);
-
         // Filter articles by selected source if selected from doughnut chart
         if (selectedSource) {
           const filteredArticles = articlesWithPlaceholders.filter(
@@ -61,7 +55,9 @@ const News = ({ category, selectedSource, setCounts }) => {
 
   return (
     <>
-      <div className={styles.grid}>
+      <div
+        className={`${styles.grid} ${articles.length > 0 ? styles.fadeIn : ''}`}
+      >
         {articles.map((article, index) => (
           <a
             key={index}
