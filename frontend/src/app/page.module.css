@@ -14,5 +14,12 @@
   flex: 1;
 }
 
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 16px;
+  }
+}
+
 
 

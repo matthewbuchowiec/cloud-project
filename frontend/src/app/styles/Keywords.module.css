@@ -4,8 +4,19 @@
   padding-bottom: 2rem;
 }
 .span {
-  color: rgba(46, 46, 46, 0.743);
+  color: rgb(0, 0, 0);
   font-size: 1.8rem;
   font-weight: 400;
   margin-bottom: 1rem;
+}
+
+.displayCategory {
+  color: #007bff;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .conatainer {
+    place-items: baseline;
+  }
 }
